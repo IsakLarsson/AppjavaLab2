@@ -15,6 +15,7 @@ import java.net.URL;
 import java.net.URLConnection;
 
 public class APIHandler {
+    //TODO lägg in channels i en hashtabell eventuellt en egen klass
 
     public APIHandler(){
 
@@ -32,8 +33,24 @@ public class APIHandler {
 
         try {
             doc = getRootElement(db, url); // gets root element "sr"
+            Element docElement = doc.getDocumentElement();
+            NodeList elementChildren = docElement.getElementsByTagName(
+                    "pagination");
+            Node pagination = elementChildren.item(0);
 
-            NodeList channels = doc.getElementsByTagName("channel");
+
+            //get page info
+            NodeList pagesnrList = doc.getElementsByTagName("totalpages");
+            Node pagesnrreal = pagesnrList.item(0);
+            Element pagenrStringelement = (Element) pagesnrreal;
+            System.out.println("Nr of pages: "+ pagenrStringelement.getTextContent());
+
+            NodeList nextPage = doc.getElementsByTagName("nextpage");
+            Node nextpageNode = nextPage.item(0);
+            Element nextPageElement = (Element)nextpageNode;
+            System.out.println("Next Page " + nextPageElement.getTextContent());
+
+            NodeList channels = doc.getElementsByTagName("channel") ;
             System.out.println("number of channels " + channels.getLength());
 
             for (int i = 0; i < channels.getLength(); i++){

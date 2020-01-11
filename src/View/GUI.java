@@ -19,7 +19,6 @@ public class GUI {
         frame.setLocationRelativeTo(null);
         //frame.setResizable(false);
         frame.add(panel, BorderLayout.NORTH);
-        //frame.pack();
 
         //this.menuListener = menuListener;
         //this.buttonListener = buttonListener;
@@ -61,7 +60,7 @@ public class GUI {
         upperPanel.setBorder(BorderFactory.createTitledBorder("Yeet"));
 
         textArea = new JTextArea("");
-        upperPanel.add(textArea, BorderLayout.EAST);
+        upperPanel.add(textArea, BorderLayout.CENTER);
         return upperPanel;
     }
 }
