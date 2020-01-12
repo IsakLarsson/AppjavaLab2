@@ -7,7 +7,7 @@ public class GUI {
     private JFrame frame;
     private int size = 400;
     private JMenuItem menuItem1;
-    private JTextArea textArea;
+    private JTable table;
 
     public GUI(String title){
         JPanel panel = buildUpperPanel();
@@ -57,10 +57,11 @@ public class GUI {
     private JPanel buildUpperPanel() {
         JPanel upperPanel = new JPanel();
         upperPanel.setLayout(new BorderLayout());
-        upperPanel.setBorder(BorderFactory.createTitledBorder("Yeet"));
+        table = new JTable();
 
-        textArea = new JTextArea("");
-        upperPanel.add(textArea, BorderLayout.CENTER);
+        JScrollPane scrollPane = new JScrollPane(table);
+
+        upperPanel.add(scrollPane);
         return upperPanel;
     }
 }
