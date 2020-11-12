@@ -1,25 +1,34 @@
 package View;
 
+import Model.ComboListener;
+import Model.Episode;
+import Model.TableListener;
+
 import javax.swing.*;
 import java.awt.*;
 
 public class GUI {
     private JFrame frame;
     private int size = 400;
-    private JMenuItem menuItem1;
-    private JTable table;
+    private JMenuItem updateItem;
+    private JMenuItem aboutItem;
+
+    ChannelPanel channelPanel;
+    ProgramPanel programpPanel;
+
 
     public GUI(String title){
-        JPanel panel = buildUpperPanel();
+        channelPanel = buildUpperPanel();
+        programpPanel = buildCenterPanel();
         frame = new JFrame(title);
 
         frame.setJMenuBar(buildMenuBar());
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(400,400);
         frame.setLocationRelativeTo(null);
-        //frame.setResizable(false);
-        frame.add(panel, BorderLayout.NORTH);
-
+        frame.add(channelPanel, BorderLayout.NORTH);
+        frame.add(programpPanel, BorderLayout.CENTER);
+        frame.pack();
         //this.menuListener = menuListener;
         //this.buttonListener = buttonListener;
     }
@@ -36,16 +45,37 @@ public class GUI {
         JMenuBar menuBar = new JMenuBar();
         JMenu fileMenu = new JMenu("File");
 
-        menuItem1 = new JMenuItem("Meny1");
+        updateItem = new JMenuItem("Uppdatera");
 
-        fileMenu.add(menuItem1);
+        fileMenu.add(updateItem);
 
         JMenu helpMenu = new JMenu("Help");
-
+        aboutItem = new JMenuItem("About");
+        helpMenu.add(aboutItem);
         menuBar.add(fileMenu);
         menuBar.add(helpMenu);
 
         return menuBar;
+    }
+
+    public void setupListeners(ComboListener comboListener,
+                               TableListener tableListener){
+        channelPanel.getChannelSelector().addActionListener(comboListener);
+        programpPanel.getTable().addMouseListener(tableListener);
+    }
+
+    public Object getSelectedValue(){
+        return channelPanel.getChannelSelector().getSelectedItem();
+    }
+
+    private ChannelPanel buildUpperPanel(){
+        /*JPanel channelPanel = new JPanel();
+        JComboBox channelSelector = new JComboBox();
+        channelSelector = new JComboBox();
+        channelPanel.setLayout(new BorderLayout());
+        channelPanel.add(channelSelector, BorderLayout.CENTER);*/
+        ChannelPanel channelPanel = new ChannelPanel();
+        return channelPanel;
     }
 
     /**
@@ -54,14 +84,41 @@ public class GUI {
      *
      * @return The created panel
      */
-    private JPanel buildUpperPanel() {
-        JPanel upperPanel = new JPanel();
-        upperPanel.setLayout(new BorderLayout());
-        table = new JTable();
-
+    private ProgramPanel buildCenterPanel() {
+        /*TableModel tableModel = new DefaultTableModel();
+        JPanel programPanel = new JPanel();
+        String[] labels = {"Program", "Start-tid", "Slut-tid"};
+        JTable table = new JTable(tableModel);
+        programPanel.setLayout(new BorderLayout());
+        table = new JTable(data, labels);
         JScrollPane scrollPane = new JScrollPane(table);
+        programPanel.add(scrollPane);*/
+        ProgramPanel programPanel = new ProgramPanel();
+        return programPanel;
+    }
 
-        upperPanel.add(scrollPane);
-        return upperPanel;
+
+    public void addTableItem(Episode episode){
+        programpPanel.addTableItem(episode);
+    }
+
+    public void insertComboBoxItem(String channelName, int index){
+        channelPanel.insertItem(channelName, index);
+    }
+
+    public void clearTable(){
+        programpPanel.clearTable();
+    }
+
+    public ProgramPanel getProgrampPanel() {
+        return programpPanel;
+    }
+
+    public ChannelPanel getChannelPanel() {
+        return channelPanel;
+    }
+
+    public JMenuItem getUpdateItem() {
+        return updateItem;
     }
 }

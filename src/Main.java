@@ -1,7 +1,11 @@
 public class Main {
 
     public static void main(String[] args) {
-        Controller controller = new Controller();
+        try {
+            Controller controller = new Controller();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
 }
