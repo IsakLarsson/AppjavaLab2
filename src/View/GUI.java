@@ -3,6 +3,7 @@ package View;
 import Model.ComboListener;
 import Model.Episode;
 import Model.TableListener;
+import Model.UpdateListener;
 
 import javax.swing.*;
 import java.awt.*;
@@ -24,7 +25,7 @@ public class GUI {
 
         frame.setJMenuBar(buildMenuBar());
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(400,400);
+        frame.setSize(size,size);
         frame.setLocationRelativeTo(null);
         frame.add(channelPanel, BorderLayout.NORTH);
         frame.add(programpPanel, BorderLayout.CENTER);
@@ -59,9 +60,10 @@ public class GUI {
     }
 
     public void setupListeners(ComboListener comboListener,
-                               TableListener tableListener){
+                               TableListener tableListener, UpdateListener updateListener){
         channelPanel.getChannelSelector().addActionListener(comboListener);
         programpPanel.getTable().addMouseListener(tableListener);
+        updateItem.addActionListener(updateListener);
     }
 
     public Object getSelectedValue(){
@@ -121,4 +123,5 @@ public class GUI {
     public JMenuItem getUpdateItem() {
         return updateItem;
     }
+
 }

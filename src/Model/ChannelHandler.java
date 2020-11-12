@@ -11,7 +11,9 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import Interfaces.MenuSetup;
 
+import javax.swing.JMenuItem;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -22,18 +24,19 @@ import java.util.HashMap;
 public class ChannelHandler extends Thread {
     private HashMap<String, Channel> channelMap;
     private TableauHandler tableauHandler;
+    private MenuSetup setupHandler;
+    JMenuItem updateButton;
 
-    //TODO dont trust the debuggers lies
-
-
-    public ChannelHandler(HashMap channelMap){
+    public ChannelHandler(HashMap channelMap, MenuSetup setupHandler, JMenuItem updateButton){
         this.channelMap = channelMap;
         tableauHandler = new TableauHandler(channelMap);
+        this.setupHandler = setupHandler;
+        this.updateButton = updateButton;
        // loadChannels();
     }
 
     public void loadChannels(){
-
+        updateButton.setEnabled(false);
         channelMap.clear();
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         DocumentBuilder db = null;
@@ -83,6 +86,10 @@ public class ChannelHandler extends Thread {
         } catch (SAXException | IOException e) {
             e.printStackTrace();
         }
+        updateButton.setEnabled(true);
+        setupHandler.setup();
+        System.out.println("Channels updated");
+
     }
 
     private void addNewChannel(int channelID, String channelName,
@@ -95,7 +102,7 @@ public class ChannelHandler extends Thread {
         tableauHandler.loadEpisodes(newChannel);
     }
 
-    private String getTagline(NodeList tagline, int index) {
+    private String getTagline(NodeList tagline, int index) {    
         String taglineString;
         Node taglineNode = tagline.item(index);
         Element taglineElement = (Element)taglineNode;
@@ -166,5 +173,6 @@ public class ChannelHandler extends Thread {
     @Override
     public void run() {
         loadChannels();
+        //här ska setupchoices köras
     }
 }
