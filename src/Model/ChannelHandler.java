@@ -176,12 +176,12 @@ public class ChannelHandler extends Thread {
     }
 
     @Override
-    public  void run() {
+    public void run() {
         ses.scheduleAtFixedRate(new Runnable(){
             public synchronized void run(){
                 loadChannels();
             }
-        }, 0, 1, TimeUnit.MINUTES);
-        //här ska setupchoices köras
+        }, 0, 1, TimeUnit.HOURS);  //kör varje timme
+        
     }
 }

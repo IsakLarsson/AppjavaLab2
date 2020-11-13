@@ -14,13 +14,20 @@ public class ChannelPanel extends JPanel {
     }
 
     public void insertItem(String channelName, int index){
-        if(channelSelector.getItemAt(0).equals("Loading...")){
-            channelSelector.removeAllItems();
+        if(channelSelector.getItemAt(0) == null){
+            channelSelector.insertItemAt(channelName, index);
+            return;
+        } else if(channelSelector.getItemAt(0).equals("Loading...")){
+            channelSelector.removeItemAt(0);
         }
         channelSelector.insertItemAt(channelName, index);
     }
 
     public JComboBox getChannelSelector() {
         return channelSelector;
+    }
+
+    public void clearDropDown(){
+        channelSelector.removeAllItems();
     }
 }

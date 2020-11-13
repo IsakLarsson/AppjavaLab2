@@ -112,6 +112,10 @@ public class GUI {
         programpPanel.clearTable();
     }
 
+    public void clearDropDown(){
+        channelPanel.clearDropDown();
+    }
+
     public ProgramPanel getProgrampPanel() {
         return programpPanel;
     }

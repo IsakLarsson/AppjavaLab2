@@ -13,14 +13,22 @@ public class Controller {
     private HashMap<String, Channel> channelMap;
     GUI gui;
     Object lock;
+    TreeMap<String, Channel> sorted = new TreeMap<>(); //will sort the map
+
 
     public class MenuSetupHandler implements MenuSetup{ //Interface för att kunna skicka in och exekveras i annnan tråd utan att bryta enkapsuleringen
         public void setupDropDown(){
+            gui.clearDropDown();
             int index = 0;
-            TreeMap<String, Channel> sorted = new TreeMap<>(); //sorts the map
+            sorted.clear();
             sorted.putAll(channelMap);
             for (String channelName : sorted.keySet()){
-                gui.insertComboBoxItem(channelName, index);
+                try {
+                    
+                    gui.insertComboBoxItem(channelName, index);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
                 index++;
             }
         }
