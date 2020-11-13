@@ -12,7 +12,6 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import Interfaces.MenuSetup;
-
 import javax.swing.JMenuItem;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -20,22 +19,28 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class ChannelHandler extends Thread {
     private HashMap<String, Channel> channelMap;
     private TableauHandler tableauHandler;
     private MenuSetup setupHandler;
     JMenuItem updateButton;
+    ScheduledExecutorService ses = Executors.         newSingleThreadScheduledExecutor();
 
     public ChannelHandler(HashMap channelMap, MenuSetup setupHandler, JMenuItem updateButton){
         this.channelMap = channelMap;
         tableauHandler = new TableauHandler(channelMap);
         this.setupHandler = setupHandler;
         this.updateButton = updateButton;
+        
        // loadChannels();
     }
 
-    public void loadChannels(){
+
+    public synchronized void loadChannels(){
         updateButton.setEnabled(false);
         channelMap.clear();
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -87,7 +92,7 @@ public class ChannelHandler extends Thread {
             e.printStackTrace();
         }
         updateButton.setEnabled(true);
-        setupHandler.setup();
+        setupHandler.setupDropDown();
         System.out.println("Channels updated");
 
     }
@@ -171,8 +176,12 @@ public class ChannelHandler extends Thread {
     }
 
     @Override
-    public void run() {
-        loadChannels();
+    public  void run() {
+        ses.scheduleAtFixedRate(new Runnable(){
+            public synchronized void run(){
+                loadChannels();
+            }
+        }, 0, 1, TimeUnit.MINUTES);
         //här ska setupchoices köras
     }
 }

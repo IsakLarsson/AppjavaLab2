@@ -42,7 +42,7 @@ public class TableEditor implements TableInterface {
     }
 
     public void getCurrentPlaying(String channel){
-        currentPlayingRow = 0;
+        currentPlayingRow = -1;
         ArrayList episodeList = channelMap.get(channel).getTableauList();
 
         for(int i = 0; i < episodeList.size(); i++){
@@ -55,7 +55,7 @@ public class TableEditor implements TableInterface {
             if (episode.getStartTime().isBefore(LocalDateTime.now())) {
                 // episode is earlier
                 currentPlayingRow++;
-                System.out.println(currentPlayingRow);
+                System.out.println(currentPlayingRow); // DELETE PRINT LATER
                 //return;
             }
         }
@@ -78,8 +78,8 @@ public class TableEditor implements TableInterface {
     private class PlayedCellRenderer extends DefaultTableCellRenderer
     {
         public Component getTableCellRendererComponent(JTable table,
-                                                       Object value, boolean isSelected, boolean hasFocus,
-                                                       int row, int column) {
+                Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+
             Component cell = super.getTableCellRendererComponent(table, value,
                     isSelected, hasFocus, row, column);
             if (row < currentPlayingRow) {

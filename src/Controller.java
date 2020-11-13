@@ -15,7 +15,7 @@ public class Controller {
     Object lock;
 
     public class MenuSetupHandler implements MenuSetup{ //Interface för att kunna skicka in och exekveras i annnan tråd utan att bryta enkapsuleringen
-        public void setup(){
+        public void setupDropDown(){
             int index = 0;
             TreeMap<String, Channel> sorted = new TreeMap<>(); //sorts the map
             sorted.putAll(channelMap);
@@ -32,32 +32,22 @@ public class Controller {
         
 
         SwingUtilities.invokeLater(() -> {
-            gui = new GUI("SvEriGeS RadIO");
-            ChannelHandler channelHandler = new ChannelHandler(channelMap, menuSetupHandler, gui.getUpdateItem());
+            gui = new GUI("Radio Info");
+            ChannelHandler channelHandler = new ChannelHandler(channelMap, menuSetupHandler, gui.getUpdateButton());
             TableInterface tableEditor = new TableEditor(channelMap, gui);
             gui.setupListeners(new ComboListener(tableEditor, gui),
                     new TableListener(gui, channelMap), new UpdateListener(channelHandler));
             gui.show();
-
+            
+            
             channelHandler.start();
             
         });
        
-        
 
         //TODO fixa uppdatering på demand, trådskit
         //Thread.sleep(5000); //channelmappen verkar inte hinna initas innan den ska uppdateras, trådproblem HERES THE PROBLEM YEA BUDDY
         //setupChoices();
     }
-
-    // public void setupChoices(){
-    //     int index = 0;
-    //     TreeMap<String, Channel> sorted = new TreeMap<>(); //sorts the map
-    //     sorted.putAll(channelMap);
-    //     for (String channelName : sorted.keySet()){
-    //         gui.insertComboBoxItem(channelName, index);
-    //         index++;
-    //     }
-    // }
 
 }

@@ -120,7 +120,7 @@ public class GUI {
         return channelPanel;
     }
 
-    public JMenuItem getUpdateItem() {
+    public JMenuItem getUpdateButton() {
         return updateItem;
     }
 

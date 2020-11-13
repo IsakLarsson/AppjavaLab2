@@ -1,5 +1,5 @@
 package Interfaces;
 
 public interface MenuSetup{
-    public void setup();
+    public void setupDropDown();
 }

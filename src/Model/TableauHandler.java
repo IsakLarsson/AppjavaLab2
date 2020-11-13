@@ -15,7 +15,11 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 
 public class TableauHandler {
     HashMap channelMap;
@@ -28,60 +32,102 @@ public class TableauHandler {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         DocumentBuilder db = null;
         int nrOfPages;
+        ArrayList<String> urlList = new ArrayList<String>();
+        
 
         try {
             db = dbf.newDocumentBuilder();
         } catch (ParserConfigurationException e) {
             e.printStackTrace();
         }
-        String url =
+        String urlDay1 =
                 "http://api.sr.se/api/v2/scheduledepisodes?channelid=" + channel.getID() +
-                        "&date=" + getCurrentDate();
+                "&date=" + getCurrentDate(0);
+        
+        //om klockan är över 12 på dagen, hämta nästa dag också,
+        //om klockan är innan 12 på dagen, hämta dagen innan först
+        getTableauDays(channel, urlList, urlDay1);
 
+        //System.out.println(getCurrentDate());
         Document doc = null;
 
-        try {
-            doc = getRootElement(db, url); // gets root element "sr"
+        for (String url : urlList) {
+            try {
+                doc = getRootElement(db, url); // gets root element "sr"
+    
+                nrOfPages = getNrOfPages(doc);
+    
+                for(int i = 0; i < nrOfPages; i++){
+                    String nextPageURL = null;
+    
+                    NodeList episodes = doc.getElementsByTagName(
+                            "scheduledepisode");
+                    NodeList descriptionList = doc.getElementsByTagName(
+                            "description");
+                            
+                        
+                    for(int j = 0; j < episodes.getLength(); j++){
+                        //om tiden är mer än 12 timmar bak eller fram, skippa
+                        if(checkTimeWindow(getEpisodeStartTime(doc, j))){
+                            getEpisode(channel, doc, episodes, descriptionList, j);
+                        }else{
+                            continue;
+                        }
 
-            nrOfPages = getNrOfPages(doc);
-
-            for(int i = 0; i < nrOfPages; i++){
-                String nextPageURL = null;
-
-                NodeList episodes = doc.getElementsByTagName(
-                        "scheduledepisode");
-                NodeList descriptionList = doc.getElementsByTagName(
-                        "description");
-
-                for(int j = 0; j < episodes.getLength(); j++){
-                    //create episodes from api and add to channels episodelist
-                    Episode episode;
-                    String title = getEpisodeTitle(episodes, j);
-                    String description = getDescription(descriptionList,j);
-                    String startTime = getEpisodeStartTime(doc, j);
-                    String endTIme = getEpisodeEndTime(doc, j);
-                    String imageURL = getImageURL(episodes, j);
-                    episode = new Episode(title, description, startTime,
-                            endTIme, imageURL);
-                    episode.setStartTime(getStartTime(episode));
-                    episode.setEndTime(getEndTime(episode));
-                    channel.addEpisode(episode);
+                    }
+    
+                    nextPageURL = getNextPage(doc, nextPageURL);
+                    if(nextPageURL!=null){
+                        doc = getRootElement(db, nextPageURL);
+                    }
+    
                 }
-
-                nextPageURL = getNextPage(doc, nextPageURL);
-                if(nextPageURL!=null){
-                    doc = getRootElement(db, nextPageURL);
-                }
-
+    
+    
+            } catch (SAXException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                System.out.println("Channel not found");
             }
-
-
-        } catch (SAXException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            System.out.println("Channel not found");
         }
 
+        
+
+    }
+
+    private void getTableauDays(Channel channel, ArrayList<String> urlList, String urlDay1) {
+        if(getCurrentTime().contains("AM")){
+            //AM  get dagen innan också
+            String urlDay2 = 
+                "http://api.sr.se/api/v2/scheduledepisodes?channelid=" + channel.getID() +
+                "&date=" + getCurrentDate(-1);
+            urlList.add(urlDay2);
+            urlList.add(urlDay1);
+        }else{
+            //PM  get dagen efter också
+            String urlDay2 = 
+                "http://api.sr.se/api/v2/scheduledepisodes?channelid=" + channel.getID() +
+                "&date=" + getCurrentDate(1);
+            urlList.add(urlDay1);
+            urlList.add(urlDay2);
+        }
+    }
+
+    //create episodes from api and add to channels episodelist
+    private void getEpisode(Channel channel, Document doc, NodeList episodes, 
+            NodeList  descriptionList, int j) {
+
+        Episode episode;
+        String title = getEpisodeTitle(episodes, j);
+        String description = getDescription(descriptionList,j);
+        String startTime = getEpisodeStartTime(doc, j);
+        String endTIme = getEpisodeEndTime(doc, j);
+        String imageURL = getImageURL(episodes, j);
+        episode = new Episode(title, description, startTime,
+                endTIme, imageURL);
+        episode.setStartTime(parseStartTime(episode));  //kolla starttid och sluttid
+        episode.setEndTime(parseEndTime(episode));
+        channel.addEpisode(episode);
     }
 
 
@@ -168,19 +214,43 @@ public class TableauHandler {
         return urlString;
     }
 
-    private String getCurrentDate(){
+    /**
+     * Getting the current date or another offset date
+     * @param offsetDays the number of offset days, i.e 1 for tomorrow, -1 for 
+     *                   yesterday, 0 for today
+     * @return The date formatted as ("yyyy/mm/dd")
+     */
+    private String getCurrentDate(int offsetDays){
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+        LocalDateTime now = LocalDateTime.now();
+        return dtf.format(now.plusDays(offsetDays));
+    }
+
+    private String getCurrentTime(){
+        DateTimeFormatter dtf = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT);
         LocalDateTime now = LocalDateTime.now();
         return dtf.format(now);
     }
 
-    public LocalDateTime getStartTime(Episode episode){
+    private boolean checkTimeWindow(String startTime){
+        ZonedDateTime start = ZonedDateTime.parse(startTime);
+        ZonedDateTime windowStart = ZonedDateTime.now().plusHours(-12);
+        ZonedDateTime windowEnd = ZonedDateTime.now().plusHours(12);
+        
+        if(start.isAfter(windowStart) && start.isBefore(windowEnd)){
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public LocalDateTime parseStartTime(Episode episode){
         String start = episode.getStartTimeUTC();
         ZonedDateTime zStart = ZonedDateTime.parse(start);
         return LocalDateTime.ofInstant(zStart.toInstant(), ZoneId.systemDefault());
     }
 
-    public LocalDateTime getEndTime(Episode episode){
+    public LocalDateTime parseEndTime(Episode episode){
         String end = episode.getEndTimeUTC();
         ZonedDateTime zEnd = ZonedDateTime.parse(end);
         return LocalDateTime.ofInstant(zEnd.toInstant(),
