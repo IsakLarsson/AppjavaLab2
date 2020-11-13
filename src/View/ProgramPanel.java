@@ -8,7 +8,7 @@ import java.awt.*;
 
 public class ProgramPanel extends JPanel{
     String[] labels = {"Program", "Start-tid", "Slut-tid"};
-    Object[][] data = {{"program", "tid", "tid"}};
+    Object[][] data = {{"program", "tid", "tid"}}; 
     private JTable table;
     private DefaultTableModel tableModel = new DefaultTableModel();
     private int currentPlayingRow = 4;
