@@ -21,7 +21,6 @@ public class ComboListener implements ActionListener {
             @Override
             protected Object doInBackground() throws Exception {
                 editor.updateTable(gui.getSelectedValue().toString());
-                //kalla på channelhandlers update
                 return null;
             }
         };

@@ -1,22 +1,25 @@
 import Model.*;
 import View.GUI;
-
 import javax.swing.*;
-
-import Interfaces.MenuSetup;
-
+import Interfaces.*;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.concurrent.*;
 
+/**
+ * Controller class for handling communication between model and view
+ */
 public class Controller {
     private HashMap<String, Channel> channelMap;
     GUI gui;
     Object lock;
     TreeMap<String, Channel> sorted = new TreeMap<>(); //will sort the map
 
-
-    public class MenuSetupHandler implements MenuSetup{ //Interface för att kunna skicka in och exekveras i annnan tråd utan att bryta enkapsuleringen
+    /**
+     * Setuphandler implementing the MenuSetup interface so that it can be 
+     * executed in other classes without creating too strong dependencies
+     */
+    public class MenuSetupHandler implements MenuSetup{ 
         public void setupDropDown(){
             gui.clearDropDown();
             int index = 0;
@@ -34,28 +37,31 @@ public class Controller {
         }
     }
 
+    /**
+     * Constructor for the Controller class, starts the EDT and starts up 
+     * the model
+     * @throws InterruptedException
+     */
     public Controller() throws InterruptedException {
         channelMap = new HashMap();
-        MenuSetupHandler menuSetupHandler = new MenuSetupHandler();
+        MenuSetup menuSetupHandler = new MenuSetupHandler();
         
 
         SwingUtilities.invokeLater(() -> {
             gui = new GUI("Radio Info");
-            ChannelHandler channelHandler = new ChannelHandler(channelMap, menuSetupHandler, gui.getUpdateButton());
             TableInterface tableEditor = new TableEditor(channelMap, gui);
-            gui.setupListeners(new ComboListener(tableEditor, gui),
-                    new TableListener(gui, channelMap), new UpdateListener(channelHandler));
-            gui.show();
+            ChannelHandler channelHandler = new ChannelHandler(channelMap, 
+                menuSetupHandler, gui.getUpdateButton(), tableEditor);
             
+                gui.setupListeners(new ComboListener(tableEditor, gui),
+                    new TableListener(gui, channelMap), 
+                    new UpdateListener(channelHandler, tableEditor, gui));
+            gui.show();
             
             channelHandler.start();
             
         });
        
-
-        //TODO fixa uppdatering på demand, trådskit
-        //Thread.sleep(5000); //channelmappen verkar inte hinna initas innan den ska uppdateras, trådproblem HERES THE PROBLEM YEA BUDDY
-        //setupChoices();
     }
 
 }

@@ -8,9 +8,13 @@ import java.awt.event.ActionListener;
 
 public class UpdateListener implements ActionListener {
     ChannelHandler channelHandler;
+    TableInterface tableEditor;
+    GUI gui;
 
-    public UpdateListener(ChannelHandler channelHandler){
+    public UpdateListener(ChannelHandler channelHandler, TableInterface tableEditor, GUI gui){
         this.channelHandler = channelHandler;
+        this.tableEditor = tableEditor;
+        this.gui = gui;
     }
 
     @Override
@@ -18,8 +22,9 @@ public class UpdateListener implements ActionListener {
         SwingWorker worker = new SwingWorker() {
             @Override
             protected Object doInBackground() throws Exception {
+                Object dropDownChoice = gui.getSelectedValue();
                 channelHandler.loadChannels();
-                //kalla på channelhandlers update
+                tableEditor.updateTable(dropDownChoice.toString());
                 return null;
             }
         };

@@ -12,6 +12,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import Interfaces.MenuSetup;
+
 import javax.swing.JMenuItem;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -27,15 +28,16 @@ public class ChannelHandler extends Thread {
     private HashMap<String, Channel> channelMap;
     private TableauHandler tableauHandler;
     private MenuSetup setupHandler;
+    private TableInterface tableEditor;
     JMenuItem updateButton;
     ScheduledExecutorService ses = Executors.         newSingleThreadScheduledExecutor();
 
-    public ChannelHandler(HashMap channelMap, MenuSetup setupHandler, JMenuItem updateButton){
+    public ChannelHandler(HashMap channelMap, MenuSetup setupHandler, JMenuItem updateButton, TableInterface tableEditor){
         this.channelMap = channelMap;
         tableauHandler = new TableauHandler(channelMap);
         this.setupHandler = setupHandler;
         this.updateButton = updateButton;
-        
+        this.tableEditor = tableEditor;
        // loadChannels();
     }
 
@@ -180,6 +182,7 @@ public class ChannelHandler extends Thread {
         ses.scheduleAtFixedRate(new Runnable(){
             public synchronized void run(){
                 loadChannels();
+                tableEditor.updateTable("P1");
             }
         }, 0, 1, TimeUnit.HOURS);  //kör varje timme
         

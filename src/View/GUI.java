@@ -70,6 +70,8 @@ public class GUI {
         return channelPanel.getChannelSelector().getSelectedItem();
     }
 
+    
+
     private ChannelPanel buildUpperPanel(){
         /*JPanel channelPanel = new JPanel();
         JComboBox channelSelector = new JComboBox();
@@ -104,13 +106,14 @@ public class GUI {
         programpPanel.addTableItem(episode);
     }
 
+    public void clearTable(){
+        programpPanel.clearTable();
+    }
+
     public void insertComboBoxItem(String channelName, int index){
         channelPanel.insertItem(channelName, index);
     }
 
-    public void clearTable(){
-        programpPanel.clearTable();
-    }
 
     public void clearDropDown(){
         channelPanel.clearDropDown();
