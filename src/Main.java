@@ -1,3 +1,5 @@
+import javax.swing.JOptionPane;
+
 public class Main {
 
     /**
@@ -8,7 +10,8 @@ public class Main {
         try {
             Controller controller = new Controller();
         } catch (InterruptedException e) {
-            System.out.println("Something went wrong with running the program");
+            JOptionPane.showMessageDialog(null, 
+                "Something went wrong running the program: "+ e.getMessage());
         }
     }
 
