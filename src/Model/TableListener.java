@@ -71,8 +71,15 @@ public class TableListener extends MouseAdapter {
     private Episode getEpisode(MouseEvent me) {
         ProgramPanel programPanel = gui.getProgrampPanel();
         int row = programPanel.getTable().rowAtPoint(me.getPoint());
-        String channelName =
-            gui.getChannelPanel().getChannelSelector().getSelectedItem().toString();
+        String channelName = "";
+        
+        try {
+            channelName = gui.getChannelPanel().getChannelSelector().
+                getSelectedItem().toString();
+        } catch (NullPointerException e) {
+            channelName = "P1";
+        }
+        
         Channel channel = channelMap.get(channelName);
         return channel.getTableauList().get(row);
     }

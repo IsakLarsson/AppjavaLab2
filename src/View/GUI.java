@@ -61,11 +61,10 @@ public class GUI {
 
         fileMenu.add(updateItem);
 
-        JMenu helpMenu = new JMenu("Help");
-        aboutItem = new JMenuItem("About");
-        helpMenu.add(aboutItem);
+        //JMenu helpMenu = new JMenu("Help");
+        
         menuBar.add(fileMenu);
-        menuBar.add(helpMenu);
+        //menuBar.add(helpMenu);
 
         return menuBar;
     }
