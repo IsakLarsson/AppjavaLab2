@@ -1,6 +1,6 @@
 /**
  * Class for abstracting a radiochannel, contains its attributes like
- * nam, tagline etc
+ * name, tagline etc
  */
 
 package Model;

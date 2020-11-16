@@ -27,10 +27,9 @@ public class Controller {
             sorted.putAll(channelMap);
             for (String channelName : sorted.keySet()){
                 try {
-                    
                     gui.insertComboBoxItem(channelName, index);
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    gui.showPopUp("Could not add channel");
                 }
                 index++;
             }

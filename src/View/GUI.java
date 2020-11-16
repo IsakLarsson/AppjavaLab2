@@ -8,6 +8,9 @@ import Model.UpdateListener;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * The GUI class to display all the graphical components of the program
+ */
 public class GUI {
     private JFrame frame;
     private int size = 400;
@@ -17,7 +20,11 @@ public class GUI {
     ChannelPanel channelPanel;
     ProgramPanel programpPanel;
 
-
+    /**
+     * GUI constructor, sets all the relevant values and builds the separate
+     * panels into the frame
+     * @param title The title of the program to be displayed
+     */
     public GUI(String title){
         channelPanel = buildUpperPanel();
         programpPanel = buildCenterPanel();
@@ -34,13 +41,17 @@ public class GUI {
         //this.buttonListener = buttonListener;
     }
 
+    /**
+     * Shows the gui
+     */
     public void show() {
         frame.setVisible(true);
     }
 
+
     /**
-     * Build the menu bar
-     * @return The menu bar
+     * Builds the menu bar that contains the menu choices like "file"
+     * @return The menu bar object
      */
     private JMenuBar buildMenuBar() {
         JMenuBar menuBar = new JMenuBar();
@@ -59,6 +70,14 @@ public class GUI {
         return menuBar;
     }
 
+
+    /**
+     * Sets up the actionlisteners for the comboBox (dropdown menu), update button
+     * and program table.
+     * @param comboListener Listener for the combobox
+     * @param tableListener Listener for the table
+     * @param updateListener Listener for the update button
+     */
     public void setupListeners(ComboListener comboListener,
                                TableListener tableListener, UpdateListener updateListener){
         channelPanel.getChannelSelector().addActionListener(comboListener);
@@ -66,69 +85,104 @@ public class GUI {
         updateItem.addActionListener(updateListener);
     }
 
-    public Object getSelectedValue(){
-        return channelPanel.getChannelSelector().getSelectedItem();
-    }
 
-    
-
+    /**
+     * Builds the upper panel of the frame, containing a ChannelPanel object
+     * @return The created ChannelPanel object
+     */
     private ChannelPanel buildUpperPanel(){
-        /*JPanel channelPanel = new JPanel();
-        JComboBox channelSelector = new JComboBox();
-        channelSelector = new JComboBox();
-        channelPanel.setLayout(new BorderLayout());
-        channelPanel.add(channelSelector, BorderLayout.CENTER);*/
         ChannelPanel channelPanel = new ChannelPanel();
         return channelPanel;
     }
+    
 
     /**
      * Builds the upper panel by creating a JPanel and filling it with
      * a JTextField for inputting a classname and JButton
      *
-     * @return The created panel
+     * @return The created ChannelPanel object
      */
     private ProgramPanel buildCenterPanel() {
-        /*TableModel tableModel = new DefaultTableModel();
-        JPanel programPanel = new JPanel();
-        String[] labels = {"Program", "Start-tid", "Slut-tid"};
-        JTable table = new JTable(tableModel);
-        programPanel.setLayout(new BorderLayout());
-        table = new JTable(data, labels);
-        JScrollPane scrollPane = new JScrollPane(table);
-        programPanel.add(scrollPane);*/
         ProgramPanel programPanel = new ProgramPanel();
         return programPanel;
     }
 
 
-    public void addTableItem(Episode episode){
-        programpPanel.addTableItem(episode);
+    /**
+     * Gets the item currently selected in the channel selector dropdown
+     * menu
+     * @return
+     */
+    public Object getSelectedValue(){
+        return channelPanel.getChannelSelector().getSelectedItem();
     }
 
-    public void clearTable(){
-        programpPanel.clearTable();
-    }
 
+    /**
+     * Inserts an item into the Jcombobox (dropdown menu) channel selector
+     * @param channelName The name of the channel
+     * @param index The index to add the item at
+     */
     public void insertComboBoxItem(String channelName, int index){
         channelPanel.insertItem(channelName, index);
     }
 
 
+    /**
+     * Adds an episode to the program table
+     * @param episode The episode to add
+     */
+    public void addTableItem(Episode episode){
+        programpPanel.addTableItem(episode);
+    }
+
+
+    /**
+     * Clears the table
+     */
+    public void clearTable(){
+        programpPanel.clearTable();
+    }
+
+
+    /**
+     * Clears the dropdown menu
+     */
     public void clearDropDown(){
         channelPanel.clearDropDown();
     }
 
+
+    /**
+     * Getter for the program panel object
+     * @return The programpanel object
+     */
     public ProgramPanel getProgrampPanel() {
         return programpPanel;
     }
 
+
+    /**
+     * getter for the channel panel object
+     * @return The channelpanel object
+     */
     public ChannelPanel getChannelPanel() {
         return channelPanel;
     }
 
+    
+    /**
+     * getter for the update button
+     * @return The JmenuItem object that is the update button
+     */
     public JMenuItem getUpdateButton() {
         return updateItem;
     }
 
+    /**
+     * Shows a popup with a containing message
+     */
+    public void showPopUp(String message){
+        JOptionPane.showMessageDialog(null, message);
+    }
 }
