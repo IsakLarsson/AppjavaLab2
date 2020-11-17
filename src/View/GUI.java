@@ -37,8 +37,6 @@ public class GUI {
         frame.add(channelPanel, BorderLayout.NORTH);
         frame.add(programpPanel, BorderLayout.CENTER);
         frame.pack();
-        //this.menuListener = menuListener;
-        //this.buttonListener = buttonListener;
     }
 
     /**
