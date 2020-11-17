@@ -3,17 +3,14 @@ import View.GUI;
 import javax.swing.*;
 import Interfaces.*;
 import java.util.*;
-import java.util.function.Consumer;
-import java.util.concurrent.*;
 
 /**
  * Controller class for handling communication between model and view
  */
 public class Controller {
     private HashMap<String, Channel> channelMap;
+    private TreeMap<String, Channel> sorted = new TreeMap<>(); //will sort the map
     GUI gui;
-    Object lock;
-    TreeMap<String, Channel> sorted = new TreeMap<>(); //will sort the map
 
     /**
      * Setuphandler implementing the MenuSetup interface so that it can be 

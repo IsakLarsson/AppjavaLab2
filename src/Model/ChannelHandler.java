@@ -73,7 +73,8 @@ public class ChannelHandler extends Thread {
         try {
             db = dbf.newDocumentBuilder();
         } catch (ParserConfigurationException e) {
-            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, 
+                    "XML builder failed: " + e.getMessage());
         }
         String url = "http://api.sr.se/api/v2/channels/";
         Document doc = null;
