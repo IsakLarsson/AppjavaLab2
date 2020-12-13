@@ -39,7 +39,7 @@ public class UpdateListener implements ActionListener {
             protected Object doInBackground() throws Exception {
                 Object dropDownChoice = gui.getSelectedValue();
                 channelHandler.loadChannels();
-                tableEditor.updateTable(dropDownChoice.toString());
+                tableEditor.updateTable(dropDownChoice.toString()); //kanske uppdatera i done()
                 return null;
             }
         };
