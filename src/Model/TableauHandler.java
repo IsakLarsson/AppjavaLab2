@@ -39,7 +39,7 @@ public class TableauHandler {
      * episodes to the channel objects episode list.
      * @param channel The given channel
      */
-    public void loadEpisodes(Channel channel){
+    public synchronized void loadEpisodes(Channel channel){
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         DocumentBuilder db = null;
         int nrOfPages;

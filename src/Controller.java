@@ -17,7 +17,7 @@ public class Controller {
      * executed in other classes without creating too strong dependencies
      */
     public class MenuSetupHandler implements MenuSetup{ 
-        public void setupDropDown(){
+        public synchronized void setupDropDown(){
             gui.clearDropDown();
             int index = 0;
             sorted.clear();
@@ -54,7 +54,7 @@ public class Controller {
                     new UpdateListener(channelHandler, tableEditor, gui));
             gui.show();
             
-            channelHandler.start();
+            channelHandler.load();
             
         });
        

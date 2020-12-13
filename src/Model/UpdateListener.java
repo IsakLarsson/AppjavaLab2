@@ -33,7 +33,7 @@ public class UpdateListener implements ActionListener {
      * table accordingly
      */
     @Override
-    public void actionPerformed(ActionEvent e) {
+    public synchronized void actionPerformed(ActionEvent e) {
         SwingWorker worker = new SwingWorker() {
             @Override
             protected Object doInBackground() throws Exception {

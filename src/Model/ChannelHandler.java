@@ -29,7 +29,7 @@ import java.util.concurrent.TimeUnit;
  * Class for handling the channels in the background. Sort of the core in
  * the program
  */
-public class ChannelHandler extends Thread {
+public class ChannelHandler{
     private HashMap<String, Channel> channelMap;
     private TableauHandler tableauHandler;
     private MenuSetup setupHandler;
@@ -45,7 +45,9 @@ public class ChannelHandler extends Thread {
      * @param updateButton The update button in the gui
      * @param tableEditor The interface for editing the table
      */
-    public ChannelHandler(HashMap channelMap, MenuSetup setupHandler, JMenuItem updateButton, TableInterface tableEditor){
+    public ChannelHandler(HashMap channelMap, MenuSetup setupHandler, 
+            JMenuItem updateButton, TableInterface tableEditor){
+
         this.channelMap = channelMap;
         tableauHandler = new TableauHandler(channelMap);
         this.setupHandler = setupHandler;
@@ -63,7 +65,7 @@ public class ChannelHandler extends Thread {
          * Set update button to disabled while updating to make it impossible
          * to have two threads accessing the channelmap simultaneously
          */
-        updateButton.setEnabled(false);
+        updateButton.setEnabled(false); //interface
 
         channelMap.clear();
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -244,16 +246,15 @@ public class ChannelHandler extends Thread {
     }
 
     /**
-     * Runs the thread
+     * Starts loading channels
      */
-    @Override
-    public void run() {
+    public void load(){
         ses.scheduleAtFixedRate(new Runnable(){
             public synchronized void run(){
                 loadChannels();
                 tableEditor.updateTable("P1");
             }
-        }, 0, 1, TimeUnit.HOURS);  //Eun every hours
-        
+        }, 0, 1, TimeUnit.HOURS);  //Run every hour
     }
+    
 }
