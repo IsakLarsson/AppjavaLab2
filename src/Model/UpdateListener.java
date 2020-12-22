@@ -21,7 +21,8 @@ public class UpdateListener implements ActionListener {
      * @param tableEditor The table editor object for handling the table
      * @param gui The GUI object
      */
-    public UpdateListener(ChannelHandler channelHandler, TableInterface tableEditor, GUI gui){
+    public UpdateListener(ChannelHandler channelHandler,
+                          TableInterface tableEditor, GUI gui){
         this.channelHandler = channelHandler;
         this.tableEditor = tableEditor;
         this.gui = gui;
@@ -37,10 +38,15 @@ public class UpdateListener implements ActionListener {
         SwingWorker worker = new SwingWorker() {
             @Override
             protected Object doInBackground() throws Exception {
-                Object dropDownChoice = gui.getSelectedValue();
                 channelHandler.loadChannels();
-                tableEditor.updateTable(dropDownChoice.toString());
                 return null;
+            }
+
+            @Override
+            protected void done() {
+                String defaultChannel = "P1";
+                tableEditor.updateTable(defaultChannel);
+                super.done();
             }
         };
         worker.execute();

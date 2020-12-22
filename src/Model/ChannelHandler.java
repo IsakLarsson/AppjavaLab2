@@ -29,7 +29,7 @@ import java.util.concurrent.TimeUnit;
  * Class for handling the channels in the background. Sort of the core in
  * the program
  */
-public class ChannelHandler extends Thread {
+public class ChannelHandler {
     private HashMap<String, Channel> channelMap;
     private TableauHandler tableauHandler;
     private MenuSetup setupHandler;
@@ -244,10 +244,9 @@ public class ChannelHandler extends Thread {
     }
 
     /**
-     * Runs the thread
+     * Runs the handler
      */
-    @Override
-    public void run() {
+    public void load() {
         ses.scheduleAtFixedRate(new Runnable(){
             public synchronized void run(){
                 loadChannels();

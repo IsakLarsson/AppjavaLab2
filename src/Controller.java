@@ -53,9 +53,9 @@ public class Controller {
                     new TableListener(gui, channelMap), 
                     new UpdateListener(channelHandler, tableEditor, gui));
             gui.show();
-            
-            channelHandler.start();
-            
+
+            channelHandler.load();
+
         });
        
     }
