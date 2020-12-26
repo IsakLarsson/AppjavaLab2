@@ -13,8 +13,7 @@ import org.xml.sax.SAXException;
 
 import Interfaces.*;
 
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
+import javax.swing.*;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -45,7 +44,8 @@ public class ChannelHandler {
      * @param updateButton The update button in the gui
      * @param tableEditor The interface for editing the table
      */
-    public ChannelHandler(HashMap channelMap, MenuSetup setupHandler, JMenuItem updateButton, TableInterface tableEditor){
+    public ChannelHandler(HashMap channelMap, MenuSetup setupHandler,
+                          JMenuItem updateButton, TableInterface tableEditor){
         this.channelMap = channelMap;
         tableauHandler = new TableauHandler(channelMap);
         this.setupHandler = setupHandler;
@@ -59,12 +59,6 @@ public class ChannelHandler {
      * and adds them to the channelmap
      */
     public synchronized void loadChannels(){
-        /**
-         * Set update button to disabled while updating to make it impossible
-         * to have two threads accessing the channelmap simultaneously
-         */
-        updateButton.setEnabled(false);
-
         channelMap.clear();
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         DocumentBuilder db = null;
@@ -110,14 +104,16 @@ public class ChannelHandler {
 
         } catch (SAXException e){
             JOptionPane.showMessageDialog(null, 
-                    "Something went wrong when reading the XML document");
+                    "Something went wrong when reading the XML" +
+                            " document");
         } catch(IOException e) {
             System.out.println("Episode not found at: "+ 
                     e.getMessage()+ " skipping..");
         }
         setupHandler.setupDropDown();
         updateButton.setEnabled(true);
-        JOptionPane.showMessageDialog(null, "Channels updated succesfully");
+        JOptionPane.showMessageDialog(null,
+                "Channels updated succesfully");
     }
 
 
@@ -239,20 +235,35 @@ public class ChannelHandler {
             throws SAXException, IOException {
         Document doc;
         doc = db.parse(new URL(url).openStream());
-        //System.out.println("Root: " + doc.getDocumentElement().getNodeName());
+        //System.out.println("Root: " +
+        // doc.getDocumentElement().getNodeName());
         return doc;
     }
 
     /**
-     * Runs the handler
+     * Starts the handler which updates the channels once every hour via
+     * SwingWorker
      */
-    public void load() {
-        ses.scheduleAtFixedRate(new Runnable(){
-            public synchronized void run(){
+    public void startHandler() {
+        /**
+         * Set update button to disabled while updating to make it impossible
+         * to have two threads accessing the channelmap simultaneously
+         */
+        updateButton.setEnabled(false);
+        ses.scheduleAtFixedRate(new SwingWorker(){
+            @Override
+            protected Object doInBackground() throws Exception {
                 loadChannels();
-                tableEditor.updateTable("P1");
+                return null;
             }
-        }, 0, 1, TimeUnit.HOURS);  //Eun every hours
-        
+
+            @Override
+            protected void done() {
+                tableEditor.updateTable("P1");
+                super.done();
+            }
+        }, 0, 1, TimeUnit.HOURS);  //Eun every hour
+        updateButton.setEnabled(true);
+
     }
 }
