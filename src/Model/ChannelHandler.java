@@ -110,8 +110,7 @@ public class ChannelHandler {
             System.out.println("Episode not found at: "+ 
                     e.getMessage()+ " skipping..");
         }
-        setupHandler.setupDropDown();
-        updateButton.setEnabled(true);
+
         JOptionPane.showMessageDialog(null,
                 "Channels updated succesfully");
     }
@@ -260,10 +259,11 @@ public class ChannelHandler {
             @Override
             protected void done() {
                 tableEditor.updateTable("P1");
+                setupHandler.setupDropDown();
+                updateButton.setEnabled(true);
                 super.done();
             }
         }, 0, 1, TimeUnit.HOURS);  //Eun every hour
-        updateButton.setEnabled(true);
 
     }
 }

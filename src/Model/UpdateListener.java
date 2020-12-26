@@ -1,5 +1,6 @@
 package Model;
 
+import Interfaces.MenuSetup;
 import View.GUI;
 
 import javax.swing.*;
@@ -14,18 +15,21 @@ public class UpdateListener implements ActionListener {
     ChannelHandler channelHandler;
     TableInterface tableEditor;
     GUI gui;
-
+    MenuSetup setupHandler;
     /**
      * Constructor for the update listener
      * @param channelHandler The channelHandler object for the channels
      * @param tableEditor The table editor object for handling the table
      * @param gui The GUI object
+     * @param setupHandler the interface to update the dropdown menu
      */
     public UpdateListener(ChannelHandler channelHandler,
-                          TableInterface tableEditor, GUI gui){
+                          TableInterface tableEditor, GUI gui,
+                          MenuSetup setupHandler){
         this.channelHandler = channelHandler;
         this.tableEditor = tableEditor;
         this.gui = gui;
+        this.setupHandler = setupHandler;
     }
 
     /**
@@ -35,6 +39,7 @@ public class UpdateListener implements ActionListener {
      */
     @Override
     public void actionPerformed(ActionEvent e) {
+        gui.getUpdateButton().setEnabled(false);
         SwingWorker worker = new SwingWorker() {
             @Override
             protected Object doInBackground() throws Exception {
@@ -46,6 +51,8 @@ public class UpdateListener implements ActionListener {
             protected void done() {
                 String defaultChannel = "P1";
                 tableEditor.updateTable(defaultChannel);
+                setupHandler.setupDropDown();
+                gui.getUpdateButton().setEnabled(true);
                 super.done();
             }
         };

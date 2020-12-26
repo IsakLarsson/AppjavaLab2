@@ -16,7 +16,7 @@ public class Controller {
      * Setuphandler implementing the MenuSetup interface so that it can be 
      * executed in other classes without creating too strong dependencies
      */
-    public class MenuSetupHandler implements MenuSetup{ 
+    public class MenuSetupHandler implements MenuSetup{
         public void setupDropDown(){
             gui.clearDropDown();
             int index = 0;
@@ -51,7 +51,8 @@ public class Controller {
             
                 gui.setupListeners(new ComboListener(tableEditor, gui),
                     new TableListener(gui, channelMap), 
-                    new UpdateListener(channelHandler, tableEditor, gui));
+                    new UpdateListener(channelHandler, tableEditor, gui,
+                            menuSetupHandler));
             gui.show();
 
             channelHandler.startHandler();
