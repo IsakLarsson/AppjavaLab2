@@ -17,6 +17,8 @@ import javax.swing.*;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
@@ -28,14 +30,13 @@ import java.util.concurrent.TimeUnit;
  * Class for handling the channels in the background. Sort of the core in
  * the program
  */
-public class ChannelHandler {
+public class ChannelHandler extends AbstractAction{
+    private javax.swing.Timer fTimer;
     private HashMap<String, Channel> channelMap;
     private TableauHandler tableauHandler;
     private MenuSetup setupHandler;
     private TableInterface tableEditor;
     JMenuItem updateButton;
-    ScheduledExecutorService ses = 
-        Executors.newSingleThreadScheduledExecutor(); //for running every hour
 
     /**
      * Constructor for the class. Sets the fields
@@ -51,6 +52,10 @@ public class ChannelHandler {
         this.setupHandler = setupHandler;
         this.updateButton = updateButton;
         this.tableEditor = tableEditor;
+
+        //for running every hour
+        fTimer = new javax.swing.Timer(3600000, this);
+        fTimer.setInitialDelay(0);
     }
 
     /**
@@ -244,12 +249,17 @@ public class ChannelHandler {
      * SwingWorker
      */
     public void startHandler() {
+        fTimer.start();
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent evt) {
         /**
          * Set update button to disabled while updating to make it impossible
          * to have two threads accessing the channelmap simultaneously
          */
         updateButton.setEnabled(false);
-        ses.scheduleAtFixedRate(new SwingWorker(){
+        SwingWorker worker = new SwingWorker() {
             @Override
             protected Object doInBackground() throws Exception {
                 loadChannels();
@@ -258,12 +268,13 @@ public class ChannelHandler {
 
             @Override
             protected void done() {
-                tableEditor.updateTable("P1");
+                String defaultChannel = "P1";
+                tableEditor.updateTable(defaultChannel);
                 setupHandler.setupDropDown();
                 updateButton.setEnabled(true);
                 super.done();
             }
-        }, 0, 1, TimeUnit.HOURS);  //Eun every hour
-
+        };
+        worker.execute();
     }
 }
