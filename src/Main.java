@@ -11,7 +11,8 @@ public class Main {
             Controller controller = new Controller();
         } catch (InterruptedException e) {
             JOptionPane.showMessageDialog(null, 
-                "Something went wrong running the program: "+ e.getMessage());
+                "Something went wrong running the program: "
+                        + e.getMessage());
         }
     }
 

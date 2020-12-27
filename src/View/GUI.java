@@ -69,14 +69,15 @@ public class GUI {
 
 
     /**
-     * Sets up the actionlisteners for the comboBox (dropdown menu), update button
-     * and program table.
+     * Sets up the actionlisteners for the comboBox (dropdown menu),
+     * update button and program table.
      * @param comboListener Listener for the combobox
      * @param tableListener Listener for the table
      * @param updateListener Listener for the update button
      */
     public void setupListeners(ComboListener comboListener,
-                               TableListener tableListener, UpdateListener updateListener){
+                               TableListener tableListener,
+                               UpdateListener updateListener){
         channelPanel.getChannelSelector().addActionListener(comboListener);
         programpPanel.getTable().addMouseListener(tableListener);
         updateItem.addActionListener(updateListener);

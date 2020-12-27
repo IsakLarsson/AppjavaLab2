@@ -9,7 +9,9 @@ import java.util.*;
  */
 public class Controller {
     private HashMap<String, Channel> channelMap;
-    private TreeMap<String, Channel> sorted = new TreeMap<>(); //will sort the map
+
+    //Will be a sorted map by default
+    private TreeMap<String, Channel> sorted = new TreeMap<>();
     GUI gui;
 
     /**
@@ -40,10 +42,9 @@ public class Controller {
      */
     public Controller() throws InterruptedException {
         channelMap = new HashMap();
-        MenuSetup menuSetupHandler = new MenuSetupHandler();
-        
 
         SwingUtilities.invokeLater(() -> {
+            MenuSetup menuSetupHandler = new MenuSetupHandler();
             gui = new GUI("Radio Info");
             TableInterface tableEditor = new TableEditor(channelMap, gui);
             ChannelHandler channelHandler = new ChannelHandler(channelMap, 

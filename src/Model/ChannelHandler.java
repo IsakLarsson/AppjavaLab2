@@ -18,13 +18,9 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Class for handling the channels in the background. Sort of the core in
@@ -245,13 +241,17 @@ public class ChannelHandler extends AbstractAction{
     }
 
     /**
-     * Starts the handler which updates the channels once every hour via
-     * SwingWorker
+     * Starts the timer which updates the channels once every hour
      */
     public void startHandler() {
         fTimer.start();
     }
 
+    /**
+     * Updates the channels on a SwingWorker background thread and updates
+     * the GUI when done
+     * @param evt
+     */
     @Override
     public void actionPerformed(ActionEvent evt) {
         /**
