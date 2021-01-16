@@ -48,8 +48,8 @@ public class TableauHandler {
         try {
             db = dbf.newDocumentBuilder();
         } catch (ParserConfigurationException e) {
-            JOptionPane.showMessageDialog(null, "Parser Error:" +
-                 e.getMessage());
+            JOptionPane.showMessageDialog(null,
+                    "Parser Error:" + e.getMessage());
         }
         
         getTableauDays(channel, urlList);
@@ -88,7 +88,7 @@ public class TableauHandler {
     
             } catch (SAXException e) {
                 JOptionPane.showMessageDialog(null, 
-                    "Something went wrong when reading the XML document");
+                    "Something went wrong reading the XML document");
             } catch (IOException e) {
                 System.out.println("Channel not found at: "+ 
                     e.getMessage()+ " skipping..");
@@ -107,19 +107,23 @@ public class TableauHandler {
      */
     private void getTableauDays(Channel channel, ArrayList<String> urlList) {
         String urlDay1 =
-                "http://api.sr.se/api/v2/scheduledepisodes?channelid=" + channel.getID() +
+                "http://api.sr.se/api/v2/scheduledepisodes?channelid=" +
+                        channel.getID() +
                 "&date=" + getCurrentDate(0);
 
-        //If before 12:00, get the day before as well, otherwise get the day after
+        //If before 12:00, get the day before as well, otherwise get
+        // the day after
         if(getCurrentTime().contains("AM")){
             String urlDay2 = 
-                "http://api.sr.se/api/v2/scheduledepisodes?channelid=" + channel.getID() +
+                "http://api.sr.se/api/v2/scheduledepisodes?channelid=" +
+                        channel.getID() +
                 "&date=" + getCurrentDate(-1);
             urlList.add(urlDay2);
             urlList.add(urlDay1);
         }else{
             String urlDay2 = 
-                "http://api.sr.se/api/v2/scheduledepisodes?channelid=" + channel.getID() +
+                "http://api.sr.se/api/v2/scheduledepisodes?channelid=" +
+                        channel.getID() +
                 "&date=" + getCurrentDate(1);
             urlList.add(urlDay1);
             urlList.add(urlDay2);
@@ -158,7 +162,8 @@ public class TableauHandler {
      * @throws SAXException
      * @throws IOException
      */
-    private Document getRootElement(DocumentBuilder db, String url) throws SAXException, IOException {
+    private Document getRootElement(DocumentBuilder db, String url)
+            throws SAXException, IOException {
         Document doc;
         doc = db.parse(new URL(url).openStream());
         return doc;
@@ -296,7 +301,8 @@ public class TableauHandler {
      * @return The current time as a string formatted as (HH:MM AM/PM)
      */
     private String getCurrentTime(){
-        DateTimeFormatter dtf = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT);
+        DateTimeFormatter dtf =
+                DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT);
         LocalDateTime now = LocalDateTime.now();
         return dtf.format(now);
     }
@@ -327,7 +333,8 @@ public class TableauHandler {
     public LocalDateTime parseStartTime(Episode episode){
         String start = episode.getStartTimeUTC();
         ZonedDateTime zStart = ZonedDateTime.parse(start);
-        return LocalDateTime.ofInstant(zStart.toInstant(), ZoneId.systemDefault());
+        return LocalDateTime.ofInstant(zStart.toInstant(),
+                ZoneId.systemDefault());
     }
 
     /**

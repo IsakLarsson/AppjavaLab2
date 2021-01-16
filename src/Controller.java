@@ -9,15 +9,17 @@ import java.util.*;
  */
 public class Controller {
     private HashMap<String, Channel> channelMap;
-    private TreeMap<String, Channel> sorted = new TreeMap<>(); //will sort the map
+
+    //Will be a sorted map by default
+    private TreeMap<String, Channel> sorted = new TreeMap<>();
     GUI gui;
 
     /**
      * Setuphandler implementing the MenuSetup interface so that it can be 
      * executed in other classes without creating too strong dependencies
      */
-    public class MenuSetupHandler implements MenuSetup{ 
-        public synchronized void setupDropDown(){
+    public class MenuSetupHandler implements MenuSetup{
+        public void setupDropDown(){
             gui.clearDropDown();
             int index = 0;
             sorted.clear();
@@ -40,10 +42,9 @@ public class Controller {
      */
     public Controller() throws InterruptedException {
         channelMap = new HashMap();
-        MenuSetup menuSetupHandler = new MenuSetupHandler();
-        
 
         SwingUtilities.invokeLater(() -> {
+            MenuSetup menuSetupHandler = new MenuSetupHandler();
             gui = new GUI("Radio Info");
             TableInterface tableEditor = new TableEditor(channelMap, gui);
             ChannelHandler channelHandler = new ChannelHandler(channelMap, 
@@ -51,11 +52,12 @@ public class Controller {
             
                 gui.setupListeners(new ComboListener(tableEditor, gui),
                     new TableListener(gui, channelMap), 
-                    new UpdateListener(channelHandler, tableEditor, gui));
+                    new UpdateListener(channelHandler, tableEditor, gui,
+                            menuSetupHandler));
             gui.show();
-            
-            channelHandler.load();
-            
+
+            channelHandler.startHandler();
+
         });
        
     }

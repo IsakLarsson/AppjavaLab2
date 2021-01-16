@@ -13,30 +13,26 @@ import org.xml.sax.SAXException;
 
 import Interfaces.*;
 
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
+import javax.swing.*;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import java.awt.event.ActionEvent;
 import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Class for handling the channels in the background. Sort of the core in
  * the program
  */
-public class ChannelHandler{
+public class ChannelHandler extends AbstractAction{
+    private javax.swing.Timer fTimer;
     private HashMap<String, Channel> channelMap;
     private TableauHandler tableauHandler;
     private MenuSetup setupHandler;
     private TableInterface tableEditor;
     JMenuItem updateButton;
-    ScheduledExecutorService ses = 
-        Executors.newSingleThreadScheduledExecutor(); //for running every hour
 
     /**
      * Constructor for the class. Sets the fields
@@ -45,14 +41,17 @@ public class ChannelHandler{
      * @param updateButton The update button in the gui
      * @param tableEditor The interface for editing the table
      */
-    public ChannelHandler(HashMap channelMap, MenuSetup setupHandler, 
-            JMenuItem updateButton, TableInterface tableEditor){
-
+    public ChannelHandler(HashMap channelMap, MenuSetup setupHandler,
+                          JMenuItem updateButton, TableInterface tableEditor){
         this.channelMap = channelMap;
         tableauHandler = new TableauHandler(channelMap);
         this.setupHandler = setupHandler;
         this.updateButton = updateButton;
         this.tableEditor = tableEditor;
+
+        //for running every hour
+        fTimer = new javax.swing.Timer(3600000, this);
+        fTimer.setInitialDelay(0);
     }
 
     /**
@@ -61,12 +60,6 @@ public class ChannelHandler{
      * and adds them to the channelmap
      */
     public synchronized void loadChannels(){
-        /**
-         * Set update button to disabled while updating to make it impossible
-         * to have two threads accessing the channelmap simultaneously
-         */
-        updateButton.setEnabled(false); //interface
-
         channelMap.clear();
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         DocumentBuilder db = null;
@@ -112,14 +105,15 @@ public class ChannelHandler{
 
         } catch (SAXException e){
             JOptionPane.showMessageDialog(null, 
-                    "Something went wrong when reading the XML document");
+                    "Something went wrong when reading the XML" +
+                            " document");
         } catch(IOException e) {
             System.out.println("Episode not found at: "+ 
                     e.getMessage()+ " skipping..");
         }
-        setupHandler.setupDropDown();
-        updateButton.setEnabled(true);
-        JOptionPane.showMessageDialog(null, "Channels updated succesfully");
+
+        JOptionPane.showMessageDialog(null,
+                "Channels updated succesfully");
     }
 
 
@@ -241,20 +235,46 @@ public class ChannelHandler{
             throws SAXException, IOException {
         Document doc;
         doc = db.parse(new URL(url).openStream());
-        //System.out.println("Root: " + doc.getDocumentElement().getNodeName());
+        //System.out.println("Root: " +
+        // doc.getDocumentElement().getNodeName());
         return doc;
     }
 
     /**
-     * Starts loading channels
+     * Starts the timer which updates the channels once every hour
      */
-    public void load(){
-        ses.scheduleAtFixedRate(new Runnable(){
-            public synchronized void run(){
-                loadChannels();
-                tableEditor.updateTable("P1");
-            }
-        }, 0, 1, TimeUnit.HOURS);  //Run every hour
+    public void startHandler() {
+        fTimer.start();
     }
-    
+
+    /**
+     * Updates the channels on a SwingWorker background thread and updates
+     * the GUI when done
+     * @param evt
+     */
+    @Override
+    public void actionPerformed(ActionEvent evt) {
+        /**
+         * Set update button to disabled while updating to make it impossible
+         * to have two threads accessing the channelmap simultaneously
+         */
+        updateButton.setEnabled(false);
+        SwingWorker worker = new SwingWorker() {
+            @Override
+            protected Object doInBackground() throws Exception {
+                loadChannels();
+                return null;
+            }
+
+            @Override
+            protected void done() {
+                String defaultChannel = "P1";
+                tableEditor.updateTable(defaultChannel);
+                setupHandler.setupDropDown();
+                updateButton.setEnabled(true);
+                super.done();
+            }
+        };
+        worker.execute();
+    }
 }
