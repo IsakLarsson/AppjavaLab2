@@ -7,6 +7,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -48,8 +49,7 @@ public class TableauHandler {
         try {
             db = dbf.newDocumentBuilder();
         } catch (ParserConfigurationException e) {
-            JOptionPane.showMessageDialog(null,
-                    "Parser Error:" + e.getMessage());
+            showMessage("Parser Error:" + e.getMessage());
         }
         
         getTableauDays(channel, urlList);
@@ -87,17 +87,25 @@ public class TableauHandler {
                 }
     
             } catch (SAXException e) {
-                JOptionPane.showMessageDialog(null, 
-                    "Something went wrong reading the XML document");
+                showMessage("Something went wrong reading the XML document");
             } catch (IOException e) {
-                System.out.println("Channel not found at: "+ 
+                System.out.println("Episode not found at: "+ 
                     e.getMessage()+ " skipping..");
             }
         }
     }
 
 
-    
+    /**
+     * Helper method for displaying JOptionPanes on the EDT
+     * @param message The message to display
+     */
+    private synchronized void showMessage(String message){
+        SwingUtilities.invokeLater(() -> {
+            JOptionPane.showMessageDialog(null, message);
+        });
+    }
+
     /**
      * Gets the days that will be read from the API since we want to show
      * 12h before and 12h after the current program at all times which will

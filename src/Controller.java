@@ -8,7 +8,7 @@ import java.util.*;
  * Controller class for handling communication between model and view
  */
 public class Controller {
-    private HashMap<String, Channel> channelMap;
+    private ChannelMap channelMap;
 
     //Will be a sorted map by default
     private TreeMap<String, Channel> sorted = new TreeMap<>();
@@ -23,7 +23,7 @@ public class Controller {
             gui.clearDropDown();
             int index = 0;
             sorted.clear();
-            sorted.putAll(channelMap);
+            sorted.putAll(channelMap.channels);
             for (String channelName : sorted.keySet()){
                 try {
                     gui.insertComboBoxItem(channelName, index);
@@ -38,10 +38,11 @@ public class Controller {
     /**
      * Constructor for the Controller class, starts the EDT and starts up 
      * the model
-     * @throws InterruptedException
      */
-    public Controller() throws InterruptedException {
-        channelMap = new HashMap();
+    public Controller() {
+        //channelMap = new HashMap();
+        channelMap = new ChannelMap();
+
 
         SwingUtilities.invokeLater(() -> {
             MenuSetup menuSetupHandler = new MenuSetupHandler();

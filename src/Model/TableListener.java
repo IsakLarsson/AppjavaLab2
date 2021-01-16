@@ -11,7 +11,6 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.util.HashMap;
 
 
 /**
@@ -20,7 +19,7 @@ import java.util.HashMap;
  */
 public class TableListener extends MouseAdapter {
     GUI gui;
-    private HashMap<String, Channel> channelMap;
+    private ChannelMap channelMap;
 
 
     /**
@@ -28,7 +27,7 @@ public class TableListener extends MouseAdapter {
      * @param gui The GUI
      * @param channelMap The Hashmap containing the channels
      */
-    public TableListener(GUI gui, HashMap<String, Channel> channelMap){
+    public TableListener(GUI gui, ChannelMap channelMap){
         this.gui = gui;
         this.channelMap = channelMap;
     }
@@ -45,22 +44,29 @@ public class TableListener extends MouseAdapter {
             String urlString = episode.getImageURL();
             if (urlString != null){
                 ImageIcon icon = loadImage(episode.getImageURL());
-                JOptionPane.showMessageDialog(null, description,
+                SwingUtilities.invokeLater(() -> {
+                    JOptionPane.showMessageDialog(null, description,
                         "Beskrivning",
                         JOptionPane.INFORMATION_MESSAGE,icon);
+                });
+                
             }else{
                 urlString = "https://via.placeholder" +
                         ".com/200/000000/FFFFFF/?text=ImageNotAvailable";
                 ImageIcon icon = loadImage(urlString);
-                JOptionPane.showMessageDialog(null, description,
-                        "Beskrivning",
-                        JOptionPane.INFORMATION_MESSAGE,icon);
+                SwingUtilities.invokeLater(() -> {
+                    JOptionPane.showMessageDialog(null, description,
+                    "Beskrivning",
+                    JOptionPane.INFORMATION_MESSAGE,icon);
+                });
+                
             }
         } catch (IOException e) {
-            JOptionPane.showMessageDialog(null,
-                    "Error loading image, try again");
+            gui.showPopUp( "Error loading image, try again");
         }
     }
+
+    
 
     /**
      * Gets the clicked episode and retrieves the episode object from
@@ -80,7 +86,7 @@ public class TableListener extends MouseAdapter {
             channelName = "P1";
         }
         
-        Channel channel = channelMap.get(channelName);
+        Channel channel = channelMap.channels.get(channelName);
         return channel.getTableauList().get(row);
     }
 

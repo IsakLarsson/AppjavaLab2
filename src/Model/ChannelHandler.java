@@ -12,6 +12,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import Interfaces.*;
+import View.GUI;
 
 import javax.swing.*;
 import javax.xml.parsers.DocumentBuilder;
@@ -28,7 +29,7 @@ import java.util.HashMap;
  */
 public class ChannelHandler extends AbstractAction{
     private javax.swing.Timer fTimer;
-    private HashMap<String, Channel> channelMap;
+    private ChannelMap channelMap;
     private TableauHandler tableauHandler;
     private MenuSetup setupHandler;
     private TableInterface tableEditor;
@@ -41,10 +42,10 @@ public class ChannelHandler extends AbstractAction{
      * @param updateButton The update button in the gui
      * @param tableEditor The interface for editing the table
      */
-    public ChannelHandler(HashMap channelMap, MenuSetup setupHandler,
+    public ChannelHandler(ChannelMap channelMap, MenuSetup setupHandler,
                           JMenuItem updateButton, TableInterface tableEditor){
         this.channelMap = channelMap;
-        tableauHandler = new TableauHandler(channelMap);
+        tableauHandler = new TableauHandler(channelMap.channels);
         this.setupHandler = setupHandler;
         this.updateButton = updateButton;
         this.tableEditor = tableEditor;
@@ -60,7 +61,8 @@ public class ChannelHandler extends AbstractAction{
      * and adds them to the channelmap
      */
     public synchronized void loadChannels(){
-        channelMap.clear();
+        channelMap.loading = true;
+        channelMap.channels.clear();
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         DocumentBuilder db = null;
         int nrOfPages;
@@ -68,8 +70,7 @@ public class ChannelHandler extends AbstractAction{
         try {
             db = dbf.newDocumentBuilder();
         } catch (ParserConfigurationException e) {
-            JOptionPane.showMessageDialog(null, 
-                    "XML builder failed: " + e.getMessage());
+            showMessage("XML builder failed: " + e.getMessage());
         }
         String url = "http://api.sr.se/api/v2/channels/";
         Document doc = null;
@@ -104,16 +105,25 @@ public class ChannelHandler extends AbstractAction{
             }
 
         } catch (SAXException e){
-            JOptionPane.showMessageDialog(null, 
-                    "Something went wrong when reading the XML" +
-                            " document");
+            showMessage("Something went wrong when reading the XML" +
+            " document");
         } catch(IOException e) {
             System.out.println("Episode not found at: "+ 
                     e.getMessage()+ " skipping..");
         }
+        
+        showMessage("Channels updated successfully");
+        channelMap.loading = false;
+    }
 
-        JOptionPane.showMessageDialog(null,
-                "Channels updated succesfully");
+    /**
+     * Helper method for displaying JOptionPanes on the EDT
+     * @param message The message to display
+     */
+    private synchronized void showMessage(String message){
+        SwingUtilities.invokeLater(() -> {
+            JOptionPane.showMessageDialog(null, message);
+        });
     }
 
 
@@ -158,7 +168,7 @@ public class ChannelHandler extends AbstractAction{
                                String taglineString, String imageURL) {
         Channel newChannel = new Channel(channelID, channelName,
                 taglineString, imageURL);
-        channelMap.put(newChannel.getName(), newChannel);
+        channelMap.channels.put(newChannel.getName(), newChannel);
         //System.out.println("Added channel: " + channelName + " " +
         //        taglineString);
         tableauHandler.loadEpisodes(newChannel);
@@ -262,7 +272,11 @@ public class ChannelHandler extends AbstractAction{
         SwingWorker worker = new SwingWorker() {
             @Override
             protected Object doInBackground() throws Exception {
-                loadChannels();
+                if (!channelMap.loading){
+                    loadChannels();
+                } else {
+                    System.out.println("Update in progress, please try later");
+                }
                 return null;
             }
 
@@ -277,4 +291,5 @@ public class ChannelHandler extends AbstractAction{
         };
         worker.execute();
     }
+    
 }

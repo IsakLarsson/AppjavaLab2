@@ -17,7 +17,7 @@ import java.util.HashMap;
  * channel, implements the TableInterface
  */
 public class TableEditor implements TableInterface {
-    private HashMap<String, Channel> channelMap;
+    private ChannelMap channelMap;
     private GUI gui;
     private int currentPlayingRow = 0;
 
@@ -26,7 +26,7 @@ public class TableEditor implements TableInterface {
      * @param channelMap The map containing the channels
      * @param gui The GUI
      */
-    public TableEditor (HashMap<String, Channel> channelMap, GUI gui){
+    public TableEditor (ChannelMap channelMap, GUI gui){
         this.channelMap = channelMap;
         this.gui = gui;
     }
@@ -44,10 +44,11 @@ public class TableEditor implements TableInterface {
             gui.getProgrampPanel().getTable().getColumnModel().
             getColumn(i).setCellRenderer(new PlayedCellRenderer());
         }
-        Channel channelToUpdate = channelMap.get(channel);
+        Channel channelToUpdate = channelMap.channels.get(channel);
         ArrayList episodes = channelToUpdate.getTableauList();
         for (int i = 0; i < episodes.size(); i++){
-            gui.addTableItem(channelMap.get(channel).getTableauList().get(i));
+            gui.addTableItem(channelMap.channels.get(channel).
+                getTableauList().get(i));
         }
     }
 
@@ -65,7 +66,7 @@ public class TableEditor implements TableInterface {
      */
     public void getCurrentPlaying(String channel){
         currentPlayingRow = -1;
-        ArrayList episodeList = channelMap.get(channel).getTableauList();
+        ArrayList episodeList = channelMap.channels.get(channel).getTableauList();
 
         for(int i = 0; i < episodeList.size(); i++){
             //get episode

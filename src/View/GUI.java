@@ -181,6 +181,8 @@ public class GUI {
      * Shows a popup with a containing message
      */
     public void showPopUp(String message){
-        JOptionPane.showMessageDialog(null, message);
+        SwingUtilities.invokeLater(() -> {
+            JOptionPane.showMessageDialog(null, message);
+        });
     }
 }
