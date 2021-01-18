@@ -43,7 +43,11 @@ public class UpdateListener implements ActionListener {
         SwingWorker worker = new SwingWorker() {
             @Override
             protected Object doInBackground() throws Exception {
-                channelHandler.loadChannels();
+                if (!channelHandler.loading){
+                    channelHandler.loadChannels();
+                } else {
+                    System.out.println("Loading in progress, try again later");
+                }
                 return null;
             }
 

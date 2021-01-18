@@ -28,6 +28,7 @@ import java.util.HashMap;
  * the program
  */
 public class ChannelHandler extends AbstractAction{
+    public boolean loading;
     private javax.swing.Timer fTimer;
     private ChannelMap channelMap;
     private TableauHandler tableauHandler;
@@ -49,6 +50,7 @@ public class ChannelHandler extends AbstractAction{
         this.setupHandler = setupHandler;
         this.updateButton = updateButton;
         this.tableEditor = tableEditor;
+        loading = false;
 
         //for running every hour
         fTimer = new javax.swing.Timer(3600000, this);
@@ -61,7 +63,7 @@ public class ChannelHandler extends AbstractAction{
      * and adds them to the channelmap
      */
     public synchronized void loadChannels(){
-        channelMap.loading = true;
+        loading = true;
         channelMap.channels.clear();
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         DocumentBuilder db = null;
@@ -113,7 +115,7 @@ public class ChannelHandler extends AbstractAction{
         }
         
         showMessage("Channels updated successfully");
-        channelMap.loading = false;
+        loading = false;
     }
 
     /**
@@ -272,10 +274,10 @@ public class ChannelHandler extends AbstractAction{
         SwingWorker worker = new SwingWorker() {
             @Override
             protected Object doInBackground() throws Exception {
-                if (!channelMap.loading){
+                if (!loading){
                     loadChannels();
                 } else {
-                    System.out.println("Update in progress, please try later");
+                    System.out.println("Loading in progress, try again later");
                 }
                 return null;
             }

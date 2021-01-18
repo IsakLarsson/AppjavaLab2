@@ -7,10 +7,8 @@ import java.util.HashMap;
  */
 public class ChannelMap {
     public HashMap<String, Channel> channels;
-    public boolean loading;
 
     public ChannelMap() {
         channels = new HashMap();
-        loading = false;
     }
 }
